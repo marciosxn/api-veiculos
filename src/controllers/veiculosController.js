@@ -6,11 +6,26 @@ function validarMarca(marca) {
 }
 
 exports.listar = (req, res) => {
-  db.all('SELECT * FROM veiculos', [], (err, rows) => {
+  const { marca, ano } = req.query;
+
+  let sql = 'SELECT * FROM veiculos WHERE 1=1';
+  const params = [];
+
+  if (marca) {
+    sql += ' AND marca = ?';
+    params.push(marca);
+  }
+  if (ano) {
+    sql += ' AND ano = ?';
+    params.push(ano);
+  }
+
+  db.all(sql, params, (err, rows) => {
     if (err) return res.status(500).json({ erro: err.message });
     res.json(rows);
   });
 };
+
 
 exports.buscarPorId = (req, res) => {
   db.get('SELECT * FROM veiculos WHERE id = ?', [req.params.id], (err, row) => {
