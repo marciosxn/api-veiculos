@@ -6,32 +6,21 @@ function validarMarca(marca) {
 }
 
 exports.listar = (req, res) => {
-  const { marca, ano, cor } = req.query;
+  const { marca, ano } = req.query;
 
-  let sql = 'SELECT * FROM veiculos';
-  const filtros = [];
-  const valores = [];
+  let sql = 'SELECT * FROM veiculos WHERE 1=1';
+  const params = [];
 
   if (marca) {
-    filtros.push('LOWER(marca) = ?');
-    valores.push(marca.toLowerCase());
+    sql += ' AND marca = ?';
+    params.push(marca);
   }
-
   if (ano) {
-    filtros.push('ano = ?');
-    valores.push(Number(ano));
+    sql += ' AND ano = ?';
+    params.push(ano);
   }
 
-  if (cor) {
-    filtros.push('LOWER(cor) = ?');
-    valores.push(cor.toLowerCase());
-  }
-
-  if (filtros.length > 0) {
-    sql += ' WHERE ' + filtros.join(' AND ');
-  }
-
-  db.all(sql, valores, (err, rows) => {
+  db.all(sql, params, (err, rows) => {
     if (err) return res.status(500).json({ erro: err.message });
     res.json(rows);
   });
@@ -122,3 +111,5 @@ exports.cadastradosUltimaSemana = (req, res) => {
     res.json(rows);
   });
 };
+
+
